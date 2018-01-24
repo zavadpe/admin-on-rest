@@ -1,6 +1,12 @@
 import 'babel-polyfill';
 import React, { Component } from 'react';
-import { Admin, Delete, Resource } from 'react-admin';
+import {
+    Admin,
+    Delete,
+    Resource,
+    GET_DEFAULT_MESSAGES,
+    GET_LOCALE_MESSAGES,
+} from 'react-admin';
 
 import './App.css';
 
@@ -33,6 +39,16 @@ import { ReviewList, ReviewEdit, ReviewIcon } from './reviews';
 import dataProvider from './dataProvider';
 import fakeRestServer from './restServer';
 
+const i18nProvider = (type, params) => {
+    if (type === GET_DEFAULT_MESSAGES) {
+        return translations.en; // The default messages should always resolve synchronously!!
+    }
+    if (type === GET_LOCALE_MESSAGES) {
+        return translations[params.locale];
+    }
+    throw new Error('Undefined action type', type);
+};
+
 class App extends Component {
     componentWillMount() {
         this.restoreFetch = fakeRestServer();
@@ -55,7 +71,7 @@ class App extends Component {
                 loginPage={Login}
                 appLayout={Layout}
                 menu={Menu}
-                messages={translations}
+                i18nProvider={i18nProvider}
             >
                 <Resource
                     name="customers"
